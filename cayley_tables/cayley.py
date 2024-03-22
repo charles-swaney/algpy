@@ -1,4 +1,4 @@
-from typing import Dict, Any
+from typing import Dict, Any, Union, List
 
 
 class CayleyTable():
@@ -21,8 +21,17 @@ class CayleyTable():
         - get_identity
     """
     def __init__(self, table: Dict[Any, Dict[Any, Any]]) -> None:
+        
+        self.elements = list(table.keys())
         self.table = table
-        self.elements = table.keys()
+        self.order = len(self.elements)
+
+        if any(element == "" or element is None for element in self.elements):
+            raise ValueError('Group elements cannot be the empty string or None.')
+        
+        # Prevent initialization of any Cayley Table that does not correspond to a valid group.
+        if not self.is_group():
+            raise ValueError('Input table does not correspond to a valid group.')
 
     def is_group(self) -> bool:
         """
@@ -32,12 +41,12 @@ class CayleyTable():
             - existence of inverses
             - associativity of binary operation
         """
-        return (self.is_closed
+        return (self._is_closed()
                 and self.get_identity() is not None
-                and self.has_inverses()
-                and self.is_associative())
+                and self._has_inverses()
+                and self._is_associative())
 
-    def is_closed(self) -> bool:
+    def _is_closed(self) -> bool:
         # G must be closed under the binary operation *.
 
         for element in self.elements:
@@ -45,12 +54,13 @@ class CayleyTable():
                 return False
         return True
     
-    def has_inverses(self) -> bool:
+    def _has_inverses(self) -> bool:
         # Every element must have a unique inverse.
-        return (all(self.get_inverse(element) is not None for element in self.elements) and
-                all(not isinstance(self.get_inverse(element), list) for element in self.elements))
+        return (all(self.get_inverse(element) is not None for element in self.elements)
+                and all(not isinstance(self.get_inverse(element), list)
+                        for element in self.elements))
     
-    def is_associative(self) -> bool:
+    def _is_associative(self) -> bool:
         # The group operation must be associative, i.e. (a * b) * c = a * (b * c) for all a, b, c.
         for a in self.elements:
             for b in self.elements:
@@ -58,7 +68,6 @@ class CayleyTable():
                     ab = self.table[a][b]
                     bc = self.table[b][c]
                     if self.table[ab][c] != self.table[a][bc]:
-                        print(f'a = {a}, b={b}, c = {c}, ab={ab}, bc = {bc}, so \n (ab)c = {self.table[ab][c]}, but a(bc) = {self.table[a][bc]}')
                         return False
         return True
     
@@ -86,8 +95,10 @@ class CayleyTable():
             raise ValueError("Identity element is not unique.")
         return None
 
-    def get_inverse(self, element) -> Any:
+    def get_inverse(self, element: Any) -> Any:
         """
+        Note: Can still find the 'inverse' provided there is an identity, even if the input table
+        does not represent a group.
         Arguments:
             - table: Cayley table representing the group operation
             - element: the element to find the inverse of
@@ -98,14 +109,44 @@ class CayleyTable():
             raise KeyError(f'{element} is not an element of the group.')
         inverses = []
         identity = self.get_identity()
-        if identity is None:
-            raise ValueError("No identity element found.")
         for x in self.elements:
             if self.table[element][x] == identity and self.table[x][element] == identity:
                 inverses.append(x)
         if len(inverses) == 1:
             return inverses.pop()
-        elif len(inverses) > 1:
-            raise ValueError('An element more than one inverse, please check Cayley table.')
         else:
             return None
+        
+    def is_abelian(self) -> bool:
+        # Returns true if the table represents an abelian group, and false otherwise.
+        for i in range(len(self.elements)):
+            for j in range(i + 1, len(self.elements)):
+                x, y = self.elements[i], self.elements[j]
+                if self.table[x][y] != self.table[y][x]:
+                    return False
+        return True
+
+    def order_of_element(self, element: Any) -> Union[int, float]:
+        '''
+        Return the order of element. This is defined to be the least integer m such that
+        element^m = e, and infinity otherwise. By Lagrange's Theorem, the order of any element
+        is at most the size of the group.
+        '''
+        if element not in self.elements:
+            raise ValueError('Invalid input: element not in group.')
+        if element == self.get_identity():
+            return 1
+        
+        count = 1
+        current_power = element
+        while count < self.order + 1:
+            count += 1
+            current_power = self.table[current_power][element]
+            if current_power == self.get_identity():
+                return count
+        return count
+    
+    def get_elements_of_order(self, order: int) -> List[Any]:
+        # Return a list containing all elements of order order.
+        return set([element for element in self.elements
+                    if self.order_of_element(element) == order])
