@@ -1,12 +1,15 @@
 # Cayley tables for small groups written explicitly for testing
 
-cayley_d3:
-  e: {e: 'e', r: 'r', r^2: 'r^2', s: 's', rs: 'rs', r^2s: 'r^2s'}
-  r: {e: 'r', r: 'r^2', r^2: 'e', s: 'rs', rs: 'r^2s', r^2s: 's'}
-  r^2: {e: 'r^2', r: 'e', r^2: 'r', s: 'r^2s', rs: 's', r^2s: 'rs'}
-  s: {e: 's', r: 'r^2s', r^2: 'rs', s: 'e', rs: 'r^2', r^2s: 'r'}
-  rs: {e: 'rs', r: 's', r^2: 'r^2s', s: 'r', rs: 'e', r^2s: 'r^2'}
-  r^2s: {e: 'r^2s', r: 'rs', r^2: 's', s: 'r^2', rs: 'r', r^2s: 'e'}
+cayley_d4:
+  e: {e: e, r: r, r^2: r^2, r^3: r^3, s: s, sr: sr, sr^2: sr^2, sr^3: sr^3}
+  r: {e: r, r: r^2, r^2: r^3, r^3: e, s: sr^3, sr: s, sr^2: sr, sr^3: sr^2}
+  r^2: {e: r^2, r: r^3, r^2: e, r^3: r, s: sr^2, sr: sr^3, sr^2: s, sr^3: sr}
+  r^3: {e: r^3, r: e, r^2: r, r^3: r^2, s: sr, sr: sr^2, sr^2: sr^3, sr^3: s}
+  s: {e: s, r: sr, r^2: sr^2, r^3: sr^3, s: e, sr: r, sr^2: r^2, sr^3: r^3}
+  sr: {e: sr, r: sr^2, r^2: sr^3, r^3: s, s: r^3, sr: e, sr^2: r, sr^3: r^2}
+  sr^2: {e: sr^2, r: sr^3, r^2: s, r^3: sr, s: r^2, sr: r^3, sr^2: e, sr^3: r}
+  sr^3: {e: sr^3, r: s, r^2: sr, r^3: sr^2, s: r, sr: r^2, sr^2: r^3, sr^3: e}
+
 
 cayley_mod3:
   0: {0: 0, 1: 1, 2: 2}
