@@ -1,6 +1,14 @@
 import numpy
-from typing import List, Dict, Any
-from utils import cayley_utils
+from typing import List, Dict, Any, Union
+
+import sys
+from pathlib import Path
+
+current_dir = Path(__file__).resolve().parent
+root_dir = current_dir.parent
+sys.path.append(str(root_dir))
+
+from cayley_tables import cayley
 
 
 class Group():
@@ -13,21 +21,38 @@ class Group():
     - existence of inverses
 
     Attributes:
-        elements (List[Any]): the elements in G
-        cayley_table (Dict[Dict[Any]]): a nested dictionary corresponding to the Cayley table
+        - input_table (Dict[Dict[Any]]): a nested dictionary corresponding to the Cayley table
         corresponding to G. The value of cayley_table[element1][element2] is
         element1 * element 2.
     """
-    def __init__(self, elements: List[Any],
-                 cayley_table: Dict[Any, Dict[Any, Any]]) -> None:
-        self.elements = elements
-        self.cayley_table = cayley_table
+    def __init__(self, input_table: Dict[Any, Dict[Any, Any]]=None) -> None:
+        self.cayley_table = cayley.CayleyTable(input_table)
+        if not self.cayley_table.is_group():
+            raise ValueError('Input table is not a group.')
+        self.elements = self.cayley_table.elements
 
-    def get_elements(self) -> List[Any]:
+    def op(self, element_1: Any, element_2: Any) -> Any:
+        if element_1 not in self.elements or element_2 not in self.elements:
+            raise KeyError('Can only operate on elements of the group.')
+        return self.cayley_table.table[element_1][element_2]
+
+    def elements(self) -> List[Any]:
         return self.elements
     
-    def get_identity(self) -> Any:
-        return cayley_utils.get_identity(self.cayley_table)
-    
-    def get_order(self) -> int:
+    def order(self) -> int:
         return len(self.elements)
+    
+    def is_abelian(self) -> bool:
+        return self.cayley_table.is_abelian()
+    
+    def get_identity(self) -> Any:
+        return self.cayley_table.get_identity()
+    
+    def get_inverse(self, element: Any) -> Any:
+        return self.cayley_table.get_inverse(element)
+    
+    def get_order_of_element(self, element: Any) -> Union[int, float]:
+        return self.cayley_table.get_order_of_element(element)
+    
+    def get_elements_of_order(self, order: int) -> List[Any]:
+        return self.cayley_table.get_elements_of_order(order)
