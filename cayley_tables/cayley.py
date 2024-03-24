@@ -27,11 +27,20 @@ class CayleyTable():
         self.order = len(self.elements)
 
         if any(element == "" or element is None for element in self.elements):
-            raise ValueError('Group elements cannot be the empty string or None.')
+            raise TypeError('Group elements cannot be the empty string or None.')
         
         # Prevent initialization of any Cayley Table that does not correspond to a valid group.
         if not self.is_group():
             raise ValueError('Input table does not correspond to a valid group.')
+
+    def order(self) -> int:
+        return self.order
+    
+    def elements(self) -> List[any]:
+        return self.elements
+    
+    def table(self) -> Dict[Any, Dict[Any, Any]]:
+        return self.table
 
     def is_group(self) -> bool:
         """
@@ -61,7 +70,12 @@ class CayleyTable():
                         for element in self.elements))
     
     def _is_associative(self) -> bool:
-        # The group operation must be associative, i.e. (a * b) * c = a * (b * c) for all a, b, c.
+        """
+        The group operation must be associative, i.e. (a * b) * c = a * (b * c) for all a, b, c.
+        Note that there is no algorithm which in general is better than O(n^3) because it is
+        possible for a group to be associative except for a single triple (a,b,c).
+        """
+
         for a in self.elements:
             for b in self.elements:
                 for c in self.elements:
@@ -126,7 +140,7 @@ class CayleyTable():
                     return False
         return True
 
-    def order_of_element(self, element: Any) -> Union[int, float]:
+    def get_order_of_element(self, element: Any) -> Union[int, float]:
         '''
         Return the order of element. This is defined to be the least integer m such that
         element^m = e, and infinity otherwise. By Lagrange's Theorem, the order of any element
@@ -144,9 +158,15 @@ class CayleyTable():
             current_power = self.table[current_power][element]
             if current_power == self.get_identity():
                 return count
-        return count
+        return float('inf')
     
     def get_elements_of_order(self, order: int) -> List[Any]:
         # Return a list containing all elements of order order.
         return set([element for element in self.elements
                     if self.order_of_element(element) == order])
+    
+    def is_subgroup(self, subset: List[Any]) -> bool:
+        """
+        Returns True if the subgroup formed from the elements of subset is a group, else False.
+        """
+        raise NotImplementedError('Not implemented yet.')
