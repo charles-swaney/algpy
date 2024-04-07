@@ -1,4 +1,5 @@
 from typing import Any, Dict, List
+
 from group import Group
 import sys
 from pathlib import Path
@@ -9,6 +10,7 @@ sys.path.append(str(root_dir))
 
 from cayley_tables import cayley
 
+import gen_cyclic_cayley as gcc
 
 class CyclicGroup(Group):
     """
@@ -27,25 +29,20 @@ class CyclicGroup(Group):
         - n_elements (int): the number of elements, a positive integer
 
     Methods:
-        - _generate_cayley_table: 
+        - _generate_input_table: 
             generates the Cayley table for the cyclic group with n elements.
     """
-    def __init__(self, n_elements: int) -> None:
+    def __init__(self, n_elements: int) -> Dict[int, Dict[int, int]]:
+
         if not isinstance(n_elements, int):
             raise TypeError('n_elements must be an integer.')
         if n_elements <= 0:
             raise ValueError('n_elements must be a positive integer.')
         
         self.n_elements = n_elements
-        cayley_table = self._generate_cayley_table(n_elements)
+        cayley_table = self._generate_input_table(n_elements)
         super().__init__(input_table=cayley_table)
 
-    def _generate_cayley_table(self, n_elements: int) -> Dict[int, Dict[int, int]]:
-        # Generates a Cayley table for the Cyclic group of order n, C_n.
-        table = {}
-        for i in range(n_elements):
-            table[i] = {}
-            for j in range(n_elements):
-                table[i][j] = {}
-                table[i][j] = (i + j) % n_elements
-        return table
+    def _generate_input_table(self, n_elements: int) -> Dict[int, Dict[int, int]]:
+        # Generates a input table for Cayley table for the Cyclic group of order n, C_n.
+        return gcc.gen_cyclic_table(n_elements)

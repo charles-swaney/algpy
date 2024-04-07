@@ -1,4 +1,5 @@
 from typing import Dict, Any, Union, List
+from utils import dict_utils
 
 
 class CayleyTable():
@@ -14,8 +15,10 @@ class CayleyTable():
 
     Arguments:
         - table (Dict[Any, Dict[Any, Any]]): Cayley table representing the group operation
+
     Outputs:
         - Cayley table corresponding to the input dictionary
+    
     Methods:
         - is_group
         - get_identity
@@ -73,7 +76,7 @@ class CayleyTable():
         """
         The group operation must be associative, i.e. (a * b) * c = a * (b * c) for all a, b, c.
         Note that there is no algorithm which in general is better than O(n^3) because it is
-        possible for a group to be associative except for a single triple (a,b,c).
+        possible for a group to be associative except for a single triple (a, b, c).
         """
 
         for a in self.elements:
@@ -163,10 +166,11 @@ class CayleyTable():
     def get_elements_of_order(self, order: int) -> List[Any]:
         # Return a list containing all elements of order order.
         return set([element for element in self.elements
-                    if self.order_of_element(element) == order])
+                    if self.get_order_of_element(element) == order])
     
     def is_subgroup(self, subset: List[Any]) -> bool:
         """
         Returns True if the subgroup formed from the elements of subset is a group, else False.
         """
-        raise NotImplementedError('Not implemented yet.')
+        potential_subgroup = CayleyTable(dict_utils.restricted(subset, self.table))
+        return potential_subgroup.is_group()
