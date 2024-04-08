@@ -25,10 +25,9 @@ class Group():
         corresponding to G. The value of cayley_table[element1][element2] is
         element1 * element 2.
     """
-    def __init__(self, input_table: Dict[Any, Dict[Any, Any]]=None) -> None:
-        self.cayley_table = cayley.CayleyTable(input_table)
-        if not self.cayley_table.is_group():
-            raise ValueError('Input table is not a group.')
+    def __init__(self, input_table: Dict[Any, Dict[Any, Any]]=None, check_axioms=True) -> None:
+        self.check_axioms = check_axioms
+        self.cayley_table = cayley.CayleyTable(input_table, check_axioms=self.check_axioms)
         self.elements = self.cayley_table.elements
 
     def op(self, element_1: Any, element_2: Any) -> Any:
