@@ -15,6 +15,8 @@ class CayleyTable():
 
     Arguments:
         - table (Dict[Any, Dict[Any, Any]]): Cayley table representing the group operation
+        - check_axioms: Whether to verify if the input table satisfies the group axioms or not.
+            Should be False when initializing a given type of finite group, e.g. cyclic or dihedral
 
     Outputs:
         - Cayley table corresponding to the input dictionary
@@ -23,21 +25,21 @@ class CayleyTable():
         - is_group
         - get_identity
     """
-    def __init__(self, table: Dict[Any, Dict[Any, Any]]) -> None:
+    def __init__(self, table: Dict[Any, Dict[Any, Any]], check_axioms=True) -> None:
         
         self.elements = list(table.keys())
         self.table = table
-        self.order = len(self.elements)
-
+        self.check_axioms = check_axioms
         if any(element == "" or element is None for element in self.elements):
             raise TypeError('Group elements cannot be the empty string or None.')
         
         # Prevent initialization of any Cayley Table that does not correspond to a valid group.
-        if not self.is_group():
-            raise ValueError('Input table does not correspond to a valid group.')
+        if self.check_axioms:
+            if not self.is_group():
+                raise ValueError('Input table does not correspond to a valid group.')
 
     def order(self) -> int:
-        return self.order
+        return len(self.elements)
     
     def elements(self) -> List[any]:
         return self.elements
@@ -54,7 +56,7 @@ class CayleyTable():
             - associativity of binary operation
         """
         return (self._is_closed()
-                and self.get_identity() is not None
+                and self.get_identity() is not None and not isinstance(self.get_identity(), List)
                 and self._has_inverses()
                 and self._is_associative())
 
@@ -78,7 +80,6 @@ class CayleyTable():
         Note that there is no algorithm which in general is better than O(n^3) because it is
         possible for a group to be associative except for a single triple (a, b, c).
         """
-
         for a in self.elements:
             for b in self.elements:
                 for c in self.elements:
@@ -156,7 +157,7 @@ class CayleyTable():
         
         count = 1
         current_power = element
-        while count < self.order + 1:
+        while count < self.order() + 1:
             count += 1
             current_power = self.table[current_power][element]
             if current_power == self.get_identity():
