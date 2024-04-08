@@ -2,4 +2,4 @@
 
 members = [
     "cyclic_cayley"
-]
+, "nt_utils"]
