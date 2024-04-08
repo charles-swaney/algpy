@@ -25,11 +25,11 @@ cayley_s3 = cayley.CayleyTable(valid_tables['cayley_s3'])
 
 
 def test_group_order_d4():
-    assert (cayley_d4.order == 8)
+    assert (cayley_d4.order() == 8)
 
 
 def test_group_order_s3():
-    assert (cayley_s3.order == 6)
+    assert (cayley_s3.order() == 6)
 
 # Testing is_abelian (move to another testing script later)
 
@@ -53,25 +53,25 @@ def test_is_abelian_klein4():
     
 
 def test_order_e_d4():
-    assert (cayley_d4.order_of_element('e') == 1)
+    assert (cayley_d4.get_order_of_element('e') == 1)
 
 
 def test_order_sr2_d4():
-    assert (cayley_d4.order_of_element('sr^2') == 2)
+    assert (cayley_d4.get_order_of_element('sr^2') == 2)
 
 
 def test_order_rotations_d4():
-    assert (cayley_d4.order_of_element('r^3') == 4)
-    assert (cayley_d4.order_of_element('r^3') == cayley_d4.order_of_element('r'))
-    assert (cayley_d4.order_of_element('r^2') == 2)
+    assert (cayley_d4.get_order_of_element('r^3') == 4)
+    assert (cayley_d4.get_order_of_element('r^3') == cayley_d4.get_order_of_element('r'))
+    assert (cayley_d4.get_order_of_element('r^2') == 2)
 
 
 def test_order_1_mod4():
-    assert (cayley_mod4.order_of_element(1) == 4)
+    assert (cayley_mod4.get_order_of_element(1) == 4)
 
 
 def test_order_q_s3():
-    assert (cayley_s3.order_of_element('q') == 3)
+    assert (cayley_s3.get_order_of_element('q') == 3)
 
 # Testing get_elements_of_order
     
